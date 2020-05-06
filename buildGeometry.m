@@ -19,376 +19,15 @@ function [unitCell,opt]=selectUnitCell(opt)
 %LOAD UNIT CELL
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 switch opt.inputType
-    case {'user'}     
-        %Initialize empty arrays
-        unitCell.expCon=[];
-        unitCell.perCon=[];
-        %Load user file
-        eval(opt.template)
-        %Check for correct input, otherwise give error or warning message
-        if isfield(unitCell,'Polyhedron')==0
-            error('\n----------\nNo polyhedron specified for the template, make sure the userfile contains at least one call for each i-th polyhedron:\n\nPolyhedron(i)=polyhedra(''namePolyhedron'')\n----------\n',[]);
-        end
-        if and(length(unitCell.Polyhedron)>1,length(unitCell.expCon)+1<length(unitCell.Polyhedron))
-            error(']n----------\nWhen the unit cell containts more than one polyhedron, for each i-th polyhedron (i=2:P, P being the total number of polyhedra in the unit cell) specify the location by giving congruent vertices between the different polyhedra:\n\nexpCon(i-1).dir=[v1a v1b p1;\n                 v2a v2b p2;\n                 v3a v3b p3].\n\nHere, each line represents one congruent vertex pair, in which v1a refers to the 1st vertex label of the i-th polyhedron, and v1b refers to the 1st vertex label of the p1-th polyhedron etc. Depending on the initial orientation of the polyhedra, the number of rows can be less than three.\n----------\n',[])
-        end
-        if size(unitCell.perCon,1)==0
-            warning('\n----------\nNo periodic boundary conditions specified, running simulation without periodic constraints.\n\n To specify periodic boundary contions use:\n\nperCon=[f1a f1b p1a p1b;\n        f2a f2b p2a p2b;\n        f3a f3b p2a p2b].\n\nHere, f1a and f2a are the face pairs periodically located, which respectively belong to polyhedra with index p1a and p1b etc.\n----------\n',[])
-        elseif size(unitCell.perCon,2)==2
-            if length(unitCell.Polyhedron)>1
-                warning('\n----------\nFor the face pair, no specific polyhedra are specified. Using the polyhedron with index 1 as default.\n----------\n',[])
-            end
-        end    
     case {'individual'}
         %Initialize empty array not used
         unitCell.perCon=[];
         unitCell.expCon=[];
         %Load polyhedron
         unitCell.Polyhedron(1)=polyhedra(opt.template);
-    otherwise
-        %LOAD ONE OF THE PREDEFINED UNIFORM SPACE-FILLING TESSELATIONS, OR 
-        switch opt.template 
-            case {'#1'}
-                unitCell.Polyhedron(1)=polyhedra('tetrahedron');
-                unitCell.Polyhedron(2)=polyhedra('octahedron');
-                unitCell.Polyhedron(3)=polyhedra('tetrahedron');
-                unitCell.expCon(1).dir=[2 4 1; 1 2 1; 4 1 1];
-                unitCell.expCon(2).dir=[3 6 2; 4 3 2; 2 5 2];
-                unitCell.perCon=[1 1 1 2; 2 8 1 2; 4 5 1 2];
-            case {'#2'}
-                unitCell.Polyhedron(1)=polyhedra('tetrahedron');
-                unitCell.Polyhedron(2)=polyhedra('octahedron');
-                unitCell.Polyhedron(3)=polyhedra('tetrahedron');
-                unitCell.Polyhedron(4)=polyhedra('octahedron');
-                unitCell.Polyhedron(5)=polyhedra('tetrahedron');
-                unitCell.Polyhedron(6)=polyhedra('tetrahedron');
-                unitCell.expCon(1).dir=[2 4 1; 1 2 1; 4 1 1];
-                unitCell.expCon(2).dir=[3 6 2; 4 3 2; 2 5 2];
-                unitCell.expCon(3).dir=[4 4 2; 1 5 2; 2 6 2];
-                unitCell.expCon(4).dir=[2 2 3; 4 1 3; 3 3 3];
-                unitCell.expCon(5).dir=[2 5 4; 4 6 4; 3 4 4];
-                unitCell.perCon=[1 3 1 6; 2 8 1 2; 4 5 1 2];          
-            case {'#3'}
-                unitCell.Polyhedron(1)=polyhedra('tetrahedron');
-                unitCell.Polyhedron(2)=polyhedra('octahedron');
-                unitCell.Polyhedron(3)=polyhedra('tetrahedron');
-                unitCell.Polyhedron(4)=polyhedra('triangular prism');
-                unitCell.Polyhedron(5)=polyhedra('triangular prism');
-                unitCell.expCon(1).dir=[2 4 1; 1 2 1; 4 1 1];
-                unitCell.expCon(2).dir=[3 6 2; 4 3 2; 2 5 2];
-                unitCell.expCon(3).dir=[5 4 2; 4 5 2; 6 6 2];
-                unitCell.expCon(4).dir=[1 2 3; 3 3 3; 2 1 3];
-                unitCell.perCon=[1 4 1 4; 2 8 1 2; 4 5 1 2];
-            case {'#4'}
-                unitCell.Polyhedron(1)=polyhedra('tetrahedron');
-                unitCell.Polyhedron(2)=polyhedra('octahedron');
-                unitCell.Polyhedron(3)=polyhedra('tetrahedron');
-                unitCell.Polyhedron(4)=polyhedra('triangular prism');
-                unitCell.Polyhedron(5)=polyhedra('triangular prism');
-                unitCell.Polyhedron(6)=polyhedra('octahedron');
-                unitCell.Polyhedron(7)=polyhedra('tetrahedron');
-                unitCell.Polyhedron(8)=polyhedra('tetrahedron');
-                unitCell.Polyhedron(9)=polyhedra('triangular prism');
-                unitCell.Polyhedron(10)=polyhedra('triangular prism');
-                unitCell.expCon(1).dir=[2 4 1; 1 2 1; 4 1 1];
-                unitCell.expCon(2).dir=[3 6 2; 4 3 2; 2 5 2];
-                unitCell.expCon(3).dir=[5 4 2; 4 5 2; 6 6 2];
-                unitCell.expCon(4).dir=[1 2 3; 3 3 3; 2 1 3];                    
-                unitCell.expCon(5).dir=[5 1 4; 3 3 4; 1 2 4];                   
-                unitCell.expCon(6).dir=[1 2 6; 4 4 6; 3 1 6];                   
-                unitCell.expCon(7).dir=[2 4 5; 4 6 5; 1 5 5];
-                unitCell.expCon(8).dir=[5 2 7; 4 4 7; 6 1 7];                   
-                unitCell.expCon(9).dir=[1 4 6; 3 2 6; 2 6 6];
-                unitCell.perCon=[1 4 1 9; 2 8 1 2; 4 5 1 2];
-            case {'#5'}
-                unitCell.Polyhedron(1)=polyhedra('rhombicuboctahedron');
-                unitCell.Polyhedron(2)=polyhedra('cube');
-                unitCell.Polyhedron(3)=polyhedra('tetrahedron');
-                unitCell.Polyhedron(4)=polyhedra('tetrahedron');
-                unitCell.expCon(1).dir=[3 5 1; 7 6 1; 8 14 1];
-                unitCell.expCon(2).dir=[3 10 1; 2 14 1;4 22 1];
-                unitCell.expCon(3).dir=[3 16 1; 2 24 1; 1 12 1];
-                unitCell.perCon=[18 13; 10 7; 16 11];
-            case {'#6'}
-                unitCell.Polyhedron(1)=polyhedra('tetrahedron');
-                unitCell.Polyhedron(2)=polyhedra('truncated tetrahedron');
-                unitCell.Polyhedron(3)=polyhedra('truncated tetrahedron');
-                unitCell.Polyhedron(4)=polyhedra('tetrahedron');
-                unitCell.expCon(1).dir=[4 1 1; 10 2 1; 2 4 1];
-                unitCell.expCon(2).dir=[4 7 2; 10 8 2; 5 3 2];
-                unitCell.expCon(3).dir=[3 8 3; 4 12 3; 2 11 3];
-                unitCell.perCon=[1 4 1 2; 2 1 1 2; 4 2 1 2];
-            case {'#7','Fig1b'}
-                unitCell.Polyhedron(1)=polyhedra('cuboctahedron');
-                unitCell.Polyhedron(2)=polyhedra('octahedron');
-                unitCell.expCon(1).dir=[1 3 1; 2 9 1; 3 6 1];
-                unitCell.perCon=[4 6; 5 3; 1 2];
-            case {'#8'}
-                unitCell.Polyhedron(1)=polyhedra('truncated cube');
-                unitCell.Polyhedron(2)=polyhedra('octahedron');
-                unitCell.expCon(1).dir=[1 7 1; 2 9 1; 3 16 1];
-                unitCell.perCon=[4 3; 6 5; 1 2];
-            case {'#9','Fig6#b'}
-                unitCell.Polyhedron(1)=polyhedra('rhombicuboctahedron');
-                unitCell.Polyhedron(2)=polyhedra('cuboctahedron');
-                unitCell.Polyhedron(3)=polyhedra('cube');
-                unitCell.Polyhedron(4)=polyhedra('cube');
-                unitCell.Polyhedron(5)=polyhedra('cube');
-                unitCell.expCon(1).dir=[2 14 1; 4 22 1; 1 10 1];
-                unitCell.expCon(2).dir=[7 12 1; 3 24 1; 1 22 1];
-                unitCell.expCon(3).dir=[7 22 1; 5 14 1; 3 21 1];
-                unitCell.expCon(4).dir=[7 2 1; 3 6 1; 4 14 1];
-                unitCell.perCon=[4 3;6 5;1 2];
-                if strcmp(opt.template,'Fig6#b')
-                    unitCell.Polyhedron(1).solidify=[1,2,3,4,5,6,8,9,11,13,16,18,19,20,21,22,24,26];
-                    unitCell.Polyhedron(2).solidify=[7,9,11,12,13,14];
-                    unitCell.Polyhedron(3).solidify=[3,4];
-                    unitCell.Polyhedron(4).solidify=[2,5];
-                    unitCell.Polyhedron(5).solidify=[2,5];
-                end
-            case {'#10'}
-                unitCell.Polyhedron(1)=polyhedra('truncated octahedron');
-                unitCell.Polyhedron(2)=polyhedra('cuboctahedron');
-                unitCell.Polyhedron(3)=polyhedra('truncated tetrahedron');
-                unitCell.Polyhedron(4)=polyhedra('truncated tetrahedron');
-                unitCell.expCon(1).dir=[1 13 1; 4 19 1; 7 23 1];
-                unitCell.expCon(2).dir=[6 17 1; 5 15 1; 9 23 1];
-                unitCell.expCon(3).dir=[9 19 1; 10 14 1; 3 23 1];
-                unitCell.perCon=[9 5 1 3;10 8 1 4; 13 8 1 3];
-            case {'#11'}
-                unitCell.Polyhedron(1)=polyhedra('triangular prism');
-                unitCell.Polyhedron(2)=polyhedra('triangular prism');
-                unitCell.expCon(1).dir=[6 4 1;5 5 1; 3 1 1];
-                unitCell.perCon=[3 1 1 2;2 3 1 2;4 5 1 1];
-            case {'#12','Fig1c','Fig2g'}
-                unitCell.Polyhedron(1)=polyhedra('triangular prism');
-                unitCell.Polyhedron(2)=polyhedra('triangular prism');
-                unitCell.Polyhedron(3)=polyhedra('triangular prism');
-                unitCell.Polyhedron(4)=polyhedra('triangular prism');
-                unitCell.expCon(1).dir=[6 5 1; 3 4 1; 2 1 1];
-                unitCell.expCon(2).dir=[4 5 1; 6 6 1; 3 3 1];
-                unitCell.expCon(3).dir=[4 5 3; 1 6 3; 2 3 3 ];
-                unitCell.perCon=[3 1 1 3;2 3 4 2;4 5 1 1];
-            case {'#13'}
-                unitCell.Polyhedron(1)=polyhedra('cube');
-                unitCell.Polyhedron(2)=polyhedra('triangular prism');
-                unitCell.Polyhedron(3)=polyhedra('triangular prism');
-                unitCell.expCon(1).dir=[6 8 1; 4 6 1; 1 2 1];
-                unitCell.expCon(2).dir=[6 7 1; 5 5 1; 2 1 1]; 
-                unitCell.perCon=[5 2 1 1;3 1 3 2;1 6 1 1];
-            case {'#14','Fig6#c'}     
-                unitCell.Polyhedron(1)=polyhedra('cube');
-                unitCell.Polyhedron(2)=polyhedra('triangular prism');
-                unitCell.Polyhedron(3)=polyhedra('cube');
-                unitCell.Polyhedron(4)=polyhedra('triangular prism');
-                unitCell.Polyhedron(5)=polyhedra('triangular prism');
-                unitCell.Polyhedron(6)=polyhedra('triangular prism');
-                unitCell.expCon(1).dir=[6 8 1; 4 6 1; 3 4 1];
-                unitCell.expCon(2).dir=[5 4 2; 7 5 2; 3 2 2];                 
-                unitCell.expCon(3).dir=[6 6 2; 4 5 2; 3 3 2]; 
-                unitCell.expCon(4).dir=[6 5 1; 5 6 1; 3 1 1]; 
-                unitCell.expCon(5).dir=[6 5 3; 5 6 3; 2 2 3]; 
-                unitCell.perCon=[4 1 1 4;5 1 1 6;1 6 1 1];                
-                if strcmp(opt.template,'Fig6#c')
-                    unitCell.Polyhedron(1).solidify=[1 2 5 6];
-                    unitCell.Polyhedron(2).solidify=[2 ];
-                    unitCell.Polyhedron(4).solidify=[3 4 5];
-                    unitCell.Polyhedron(5).solidify=[2];
-                    unitCell.Polyhedron(6).solidify=[1];
-                end
-            case {'#15'}
-                unitCell.Polyhedron(1)=polyhedra('triangular prism');
-                unitCell.Polyhedron(2)=polyhedra('cube');
-                unitCell.Polyhedron(3)=polyhedra('triangular prism');
-                unitCell.Polyhedron(4)=polyhedra('triangular prism');
-                unitCell.Polyhedron(5)=polyhedra('cube');
-                unitCell.Polyhedron(6)=polyhedra('triangular prism');
-                unitCell.expCon(1).dir=[7 4 1; 8 5 1; 4 2 1];
-                unitCell.expCon(2).dir=[6 6 2; 3 5 2; 2 1 2];
-                unitCell.expCon(3).dir=[4 5 1; 6 6 1; 3 3 1];
-                unitCell.expCon(4).dir=[5 6 4; 6 5 4; 1 3 4];
-                unitCell.expCon(5).dir=[4 8 5; 1 7 5; 2 3 5];
-                unitCell.perCon=[4 3 2 2;1 6 2 2;2 3 6 3];
-            case {'#16','Fig6#d'}
-                unitCell.Polyhedron(1)=polyhedra('hexagonal prism');
-                unitCell.Polyhedron(2)=polyhedra('cube');
-                unitCell.Polyhedron(3)=polyhedra('cube'); 
-                unitCell.Polyhedron(4)=polyhedra('cube'); 
-                unitCell.Polyhedron(5)=polyhedra('triangular prism'); 
-                unitCell.Polyhedron(6)=polyhedra('triangular prism'); 
-                unitCell.expCon(1).dir=[7 7 1; 8 8 1; 3 1 1];
-                unitCell.expCon(2).dir=[7 9 1; 5 8 1; 3 3 1]; 
-                unitCell.expCon(3).dir=[7 10 1; 5 9 1; 3 4 1];
-                unitCell.expCon(4).dir=[4 5 4; 6 6 4; 3 2 4]; 
-                unitCell.expCon(5).dir=[6 5 3; 5 6 3; 2 2 3];
-                unitCell.perCon=[8 3 1 4;7 3 1 3;1 2 1 1];                
-                if strcmp(opt.template,'Fig6#d')
-                    unitCell.Polyhedron(1).solidify=[1 2 4 6 8];
-                    unitCell.Polyhedron(2).solidify=[2 3];
-                    unitCell.Polyhedron(3).solidify=[2 4];
-                    unitCell.Polyhedron(4).solidify=[3 5];
-                    unitCell.Polyhedron(6).solidify=[1 2 3 4 5];
-                end
-            case {'#17'}
-                unitCell.Polyhedron(1)=polyhedra('hexagonal prism');
-                unitCell.Polyhedron(2)=polyhedra('triangular prism');
-                unitCell.Polyhedron(3)=polyhedra('triangular prism');
-                unitCell.Polyhedron(4)=polyhedra('triangular prism');
-                unitCell.Polyhedron(5)=polyhedra('triangular prism');
-                unitCell.Polyhedron(6)=polyhedra('triangular prism');
-                unitCell.Polyhedron(7)=polyhedra('triangular prism');
-                unitCell.Polyhedron(8)=polyhedra('triangular prism');
-                unitCell.Polyhedron(9)=polyhedra('triangular prism');
-                unitCell.expCon(1).dir=[4 11 1; 5 10 1; 2 4 1];
-                unitCell.expCon(2).dir=[4 10 1; 5 9 1; 2 3 1];                 
-                unitCell.expCon(3).dir=[4 5 2; 6 6 2; 3 3 2]; 
-                unitCell.expCon(4).dir=[4 4 3; 5 6 3; 2 3 3]; 
-                unitCell.expCon(5).dir=[5 4 2; 6 6 2; 3 3 2]; 
-                unitCell.expCon(6).dir=[5 12 1; 6 11 1; 2 6 1];
-                unitCell.expCon(7).dir=[5 5 6; 6 4 6; 3 1 6];
-                unitCell.expCon(8).dir=[6 9 1; 4 8 1; 1 2 1];
-                unitCell.perCon=[8 2 1 5;3 3 1 6;1 2 1 1];
-            case {'#18','Fig1a','Fig2f'}
-                unitCell.Polyhedron(1)=polyhedra('hexagonal prism');
-                unitCell.Polyhedron(2)=polyhedra('triangular prism');
-                unitCell.Polyhedron(3)=polyhedra('triangular prism');
-                unitCell.expCon(1).dir=[4 10 1; 6 11 1; 3 5 1];
-                unitCell.expCon(2).dir=[6 7 1; 5 8 1; 2 2 1];
-                unitCell.perCon=[1 8 2 1;2 4 2 1;1 2 1 1];
-            case {'#19'}
-                unitCell.Polyhedron(1)=polyhedra('decagonal prism');
-                unitCell.Polyhedron(2)=polyhedra('triangular prism');
-                unitCell.Polyhedron(3)=polyhedra('triangular prism');
-                unitCell.expCon(1).dir=[1 23 1;2 24 1;4 11 1];
-                unitCell.expCon(2).dir=[1 9 1; 4 21 1; 3 10 1];
-                unitCell.perCon=[6 12; 10 4; 1 2];
-            case {'#20'}
-                unitCell.Polyhedron(1)=polyhedra('rhombicuboctahedron');
-                unitCell.Polyhedron(2)=polyhedra('octagonal prism');
-                unitCell.Polyhedron(3)=polyhedra('octagonal prism');
-                unitCell.Polyhedron(4)=polyhedra('octagonal prism');
-                unitCell.Polyhedron(5)=polyhedra('cube');
-                unitCell.Polyhedron(6)=polyhedra('cube');
-                unitCell.Polyhedron(7)=polyhedra('cube');
-                unitCell.Polyhedron(8)=polyhedra('truncated cube');
-                unitCell.expCon(1).dir=[12 22 1; 6 14 1; 5 13 1];
-                unitCell.expCon(2).dir=[6 12 1; 5 10 1; 11 22 1];
-                unitCell.expCon(3).dir=[12 10 1; 4 14 1; 3 6 1];
-                unitCell.expCon(4).dir=[3 4 1; 4 12 1; 1 2 1;];
-                unitCell.expCon(5).dir=[3 5 1; 7 6 1; 8 14 1];
-                unitCell.expCon(6).dir=[3 23 1; 1 21 1; 7 24 1];
-                unitCell.expCon(7).dir=[22 9 3; 21 5 3; 13 15 3];
-                unitCell.perCon=[17 8 1 3;9 4 1 2;8 8 1 2];      
-            case {'#21'} 
-                unitCell.Polyhedron(1)=polyhedra('truncated cuboctahedron');
-                unitCell.Polyhedron(2)=polyhedra('truncated cube');
-                unitCell.Polyhedron(3)=polyhedra('truncated tetrahedron');
-                unitCell.Polyhedron(4)=polyhedra('truncated tetrahedron');
-                unitCell.expCon(1).dir=[20 28 1; 18 26 1; 4 4 1 ];
-                unitCell.expCon(2).dir=[10 48 1; 9 22 1; 5 12 1 ];
-                unitCell.expCon(3).dir=[2 40 1; 12 30 1; 6 26 1];
-                unitCell.perCon=[4 6; 3 5; 12 11];
-            case {'#22'}
-                unitCell.Polyhedron=polyhedra('cube');
-                unitCell.perCon=[6 1; 4 3; 5 2];
-            case {'#23'}
-                unitCell.Polyhedron(1)=polyhedra('decagonal prism');
-                unitCell.Polyhedron(2)=polyhedra('cube');
-                unitCell.Polyhedron(3)=polyhedra('cube');
-                unitCell.Polyhedron(4)=polyhedra('cube'); 
-                unitCell.Polyhedron(5)=polyhedra('hexagonal prism');
-                unitCell.Polyhedron(6)=polyhedra('hexagonal prism');
-                unitCell.expCon(1).dir=[7 24 1; 8 13 1; 4 1 1];
-                unitCell.expCon(2).dir=[7 15 1; 5 14 1; 3 3 1];
-                unitCell.expCon(3).dir=[7 17 1; 5 16 1; 3 5 1];
-                unitCell.expCon(4).dir=[11 14 1; 12 13 1; 5 2 1];
-                unitCell.expCon(5).dir=[11 16 1; 12 15 1; 6 3 1];
-                unitCell.perCon=[3 12 4 1;3 10 3 1;1 2 1 1];
-            case {'#24','Fig6#a'}
-                unitCell.Polyhedron(1)=polyhedra('octagonal prism');
-                unitCell.Polyhedron(2)=polyhedra('cube');
-                unitCell.expCon(1).dir=[7 2 1; 8 14 1; 3 1 1];
-                unitCell.perCon=[4 8;6 10;1 2];                 
-                if strcmp(opt.template,'Fig6#a')
-                    unitCell.Polyhedron(1).solidify=[1,2,3,5,7];
-                    unitCell.Polyhedron(2).solidify=[2,3,4];
-                end
-            case {'#25'}
-                unitCell.Polyhedron(1)=polyhedra('truncated cuboctahedron');
-                unitCell.Polyhedron(2)=polyhedra('truncated octahedron');
-                unitCell.Polyhedron(3)=polyhedra('cube');
-                unitCell.Polyhedron(4)=polyhedra('cube');
-                unitCell.Polyhedron(5)=polyhedra('cube');
-                unitCell.expCon(1).dir=[1 12 1; 2 18 1; 10 48 1];
-                unitCell.expCon(2).dir=[7 4 1; 3 5 1; 8 12 1];
-                unitCell.expCon(3).dir=[7 22 1; 8 48 1; 3 21 1];
-                unitCell.expCon(4).dir=[3 20 1; 4 43 1; 1 18 1];
-                unitCell.perCon=[16 15;17 18;13 14];
-            case {'#26'}
-                unitCell.Polyhedron=polyhedra('hexagonal prism');
-                unitCell.perCon=[7 4; 6 3; 1 2];
-                opt.AZ=-34;
-            case {'#27'}
-                unitCell.Polyhedron(1)=polyhedra('truncated cuboctahedron');
-                unitCell.Polyhedron(2)=polyhedra('octagonal prism');
-                unitCell.Polyhedron(3)=polyhedra('octagonal prism');
-                unitCell.Polyhedron(4)=polyhedra('octagonal prism');
-                unitCell.expCon(1).dir=[5 43 1; 9 41 1; 7 42 1];
-                unitCell.expCon(2).dir=[3 13 1; 11 5 1; 1 6 1];
-                unitCell.expCon(3).dir=[5 26 1; 11 28 1; 7 20 1];
-                unitCell.perCon=[24 21;26 19;23 22];
-            case {'#28','Fig4a'}            
-                unitCell.Polyhedron=polyhedra('truncated octahedron');
-                unitCell.perCon=[14 11; 9 8; 10 7];                
-                if strcmp(opt.template,'Fig4a')
-                    unitCell.Polyhedron.solidify=[1,2,3,4,5,6,12,13];
-                end    
-            case {'#29'}
-                unitCell.Polyhedron=polyhedra('rhombic dodecahedron');
-                unitCell.perCon=[2 4;3 1;9 7];
-            case {'#6b'}
-                unitCell.Polyhedron(1)=polyhedra('truncated tetrahedron');
-                unitCell.Polyhedron(2)=polyhedra('truncated tetrahedron');
-                unitCell.expCon(1).dir=[4 7 2; 10 8 2; 5 3 2];
-                unitCell.perCon=[8 6 1 2; 7 8 1 2; 6 5 1 2];
-            case {'#6b1D'}
-                unitCell.Polyhedron(1)=polyhedra('truncated tetrahedron');
-                unitCell.Polyhedron(2)=polyhedra('truncated tetrahedron');
-                unitCell.expCon(1).dir=[4 7 2; 10 8 2; 5 3 2];
-                unitCell.perCon=[8 6 1 2];
-            case {'#6b2D'}
-                unitCell.Polyhedron(1)=polyhedra('truncated tetrahedron');
-                unitCell.Polyhedron(2)=polyhedra('truncated tetrahedron');
-                unitCell.expCon(1).dir=[4 7 2; 10 8 2; 5 3 2];
-                unitCell.perCon=[8 6 1 2; 6 5 1 2];
-            case {'#7b'}
-                unitCell.Polyhedron(1)=polyhedra('cuboctahedron');
-                unitCell.perCon=[4 6; 5 3; 1 2];
-            case {'#7b2D'}
-                unitCell.Polyhedron(1)=polyhedra('cuboctahedron');
-                unitCell.perCon=[5 3; 1 2];
-            case {'#7b1D'}
-                unitCell.Polyhedron(1)=polyhedra('cuboctahedron');
-                unitCell.perCon=[1 2];
-            case {'#22_1D'}
-                unitCell.Polyhedron=polyhedra('cube');
-                unitCell.perCon=[6 1];
-            case {'#22_2D'}
-                unitCell.Polyhedron=polyhedra('cube');
-                unitCell.perCon=[6 1; 5 2];
-            case {'#26_1Da'}
-                unitCell.Polyhedron=polyhedra('hexagonal prism');
-                unitCell.perCon=[1 2];
-            case {'#26_1Db'}
-                unitCell.Polyhedron=polyhedra('hexagonal prism');
-                unitCell.perCon=[7 4];
-            case {'#26_2Da'}
-                unitCell.Polyhedron=polyhedra('hexagonal prism');
-                unitCell.perCon=[7 4; 6 3];
-            case {'#26_2Db'}
-                unitCell.Polyhedron=polyhedra('hexagonal prism');
-                unitCell.perCon=[7 4; 1 2];
-        end
+    case {'material'}
+        %LOAD ONE OF THE PREDEFINED UNIFORM SPACE-FILLING TESSELATIONS
+        unitCell = createMaterial(opt.template);
 end
 
 % %Initialize empty array not used
@@ -423,7 +62,7 @@ if strcmp(opt.periodic,'off')
     unitCell.perCon=[];
     unitCell.perStr=[];
 end
-%WHEN NU SPECIFIC POLYHEDRA NUMBER IS DEFINED FOR PERIODIC FACE PAIRS, USE
+%WHEN NO SPECIFIC POLYHEDRA NUMBER IS DEFINED FOR PERIODIC FACE PAIRS, USE
 %THE DEFAULT FIRST POLYHEDRON
 if size(unitCell.perCon,2)==2
     unitCell.perCon=[unitCell.perCon ones(size(unitCell.perCon,1),size(unitCell.perCon,2))];
@@ -764,13 +403,10 @@ extrudedUnitCell.edgeHingeSorted(:,1:2)=sort(extrudedUnitCell.edgeHinge(:,1:2),2
 A=[a accumarray(c,1)];
 sharedEdge=A(A(:,3)==2,1:2);
 nodeHingeEx=zeros(size(sharedEdge,1),4);
-% nodeHingeEx=zeros(size(sharedEdge,1)*2,4);
 
 for i=1:size(sharedEdge,1)
     refNode=extrudedUnitCell.edgeHingeSorted(((extrudedUnitCell.edgeHingeSorted(:,1)==sharedEdge(i,1)).*...
         (extrudedUnitCell.edgeHingeSorted(:,2)==sharedEdge(i,2)))==1,3)';
-%     refNode=extrudedUnitCell.edgeHingeSorted(((extrudedUnitCell.edgeHingeSorted(:,1)==sharedEdge(i,1)).*...
-%         (extrudedUnitCell.edgeHingeSorted(:,2)==sharedEdge(i,2)))==1,3:4)';
     %Determine order
     refNode2=extrudedUnitCell.edgeHinge(((extrudedUnitCell.edgeHinge(:,1)==sharedEdge(i,1)).*...
         (extrudedUnitCell.edgeHinge(:,2)==sharedEdge(i,2)))==1,3)';
@@ -782,12 +418,12 @@ for i=1:size(sharedEdge,1)
     index1=index(refNode(1,:)==refNode2(1));
     index2=setdiff(index,index1);
     nodeHingeEx(i,:)=[sharedEdge(i,:) refNode(1,[index1,index2])];
-%     nodeHingeEx(2*i-1,:)=[sharedEdge(i,:) refNode(1,[index1,index2])];
-%     nodeHingeEx(2*i,:)=[sharedEdge(i,:) refNode(2,[index1,index2])];
 end
 extrudedUnitCell.nodeHingeEx=nodeHingeEx;
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Determine initial edge length
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 for i=1:size(extrudedUnitCell.edge,1)
     coor1=extrudedUnitCell.node(extrudedUnitCell.edge(i,1),:);
     coor2=extrudedUnitCell.node(extrudedUnitCell.edge(i,2),:);
@@ -795,7 +431,9 @@ for i=1:size(extrudedUnitCell.edge,1)
     extrudedUnitCell.edgeL(i)=sqrt(dx*dx');
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Determine initial angles
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 extrudedUnitCell.theta=zeros(size(extrudedUnitCell.nodeHingeEx,1),1);
 for i=1:size(extrudedUnitCell.nodeHingeEx,1)
     extrudedUnitCell.node(extrudedUnitCell.nodeHingeEx(i,:),:);
@@ -805,7 +443,9 @@ for i=1:size(extrudedUnitCell.nodeHingeEx,1)
     [~,extrudedUnitCell.theta(i)]=JacobianHinge(extrudedUnitCell.node(extrudedUnitCell.nodeHingeEx(i,:),:));
 end
 
-%Reference Nodes
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Make Reference Nodes for lattice vectors
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(opt.periodic,'on')
     extrudedUnitCell.ref=[];
     nref=size(unitCell.l,1);
@@ -815,8 +455,9 @@ if strcmp(opt.periodic,'on')
     end
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Internal Hinges
-%added by Agustin Iniguez
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 prevPolNodes = 0;
 i = 1;
 for ne=1:length(unitCell.Polyhedron)
@@ -833,7 +474,9 @@ for ne=1:length(unitCell.Polyhedron)
     prevPolNodes = nodes(ne);
 end
 
-%Max stretch possible
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Max stretch possible calculation for max energy
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(opt.constrEdge,'off')
     if ~isnan(opt.maxStretch)
         extrudedUnitCell.maxStretch = sum(extrudedUnitCell.edgeL*opt.maxStretch.^2);
@@ -844,7 +487,9 @@ else
     extrudedUnitCell.maxStretch = 0;
 end
 
-%Max hinge folding possible
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Max hinge folding possible for max energy
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if ~isnan(opt.constAnglePerc)
     extrudedUnitCell.maxHingeFold = sum(max(abs(pi*opt.constAnglePerc+extrudedUnitCell.theta),...
         abs(pi*opt.constAnglePerc-extrudedUnitCell.theta)).^2);
