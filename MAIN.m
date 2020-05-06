@@ -17,9 +17,7 @@ opt=initOpt('inputType','individual', 'template','tetrahedron', ...
             'Kappa',0.0001);    
 
 opt.saveFile = strcat('/',date,'_temp');
-
-hingeSet = [1,3];
-opt.angleConstrFinal(1).val=[ hingeSet(:) , -(pi-pi*(opt.constAnglePerc-0.005)) *ones(length(hingeSet), 1)];
+opt.hingeSet = [1 2];
 
 tic;
 

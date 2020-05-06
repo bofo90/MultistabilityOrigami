@@ -2,33 +2,29 @@ function findDeformation(unitCell,extrudedUnitCell,opt)
 
 %Show details geometries (if requested)
 if strcmp(opt.analysis,'result')
-    fprintf('Maximum stretching %1.2f.\n', opt.maxStretch);
-    fprintf('kH %f\tkTA %f\tkE %f\tkF %f\n', opt.Khinge, opt.KtargetAngle, opt.Kedge, opt.Kface);
+    fprintf('Kappa:\t%f\n', opt.Khinge);
     switch opt.readHingeFile
         case 'off'
+            opt.angleConstrFinal(1).val = [opt.hingeSet(:), -(pi-pi*(opt.constAnglePerc-0.005))*ones(length(hingeSet), 1)];
             metadataFile(opt, unitCell, extrudedUnitCell);
             nonlinearFolding(unitCell,extrudedUnitCell,opt,opt.angleConstrFinal(1).val);
-%             
         case 'on'
             opt.angleConstrFinal = [];
-            fileHinges = strcat(pwd, '/Results/hingeList_reduced/', opt.template, '.csv');
+            templateStr = split(opt.template,'_');
+            fileHinges = strcat(pwd, '/hingeList_reduced/', templateStr{1}, '.csv');
             if ~exist(fileHinges, 'file')
                 fprintf('Hinge-selection file does not exist.\n');
             else
                 hingeList = dlmread(fileHinges);
                 metadataFile(opt, unitCell, extrudedUnitCell);
-                maxHinge = opt.maxHinges;
-                minHinge = opt.minHinges;
                 numHinges = size(hingeList, 1);
                 anglFold = -(pi-pi*(opt.constAnglePerc-0.005));
-                parfor i = 1:numHinges
+                for i = 1:numHinges
                     row = hingeList(i, :);
                     hinges = row(0~=row);
-                    if length(hinges) <= maxHinge && length(hinges) >= minHinge
-                        angles = [hinges(:), anglFold * ones(length(hinges), 1)];
-                        fprintf('Hinge selection number %d/%d.\n', i, numHinges);
-                        nonlinearFolding(unitCell,extrudedUnitCell,opt, angles);
-                    end
+                    angles = [hinges(:), anglFold * ones(length(hinges), 1)];
+                    fprintf('Hinge selection number %d/%d.\n', i, numHinges);
+                    nonlinearFolding(unitCell,extrudedUnitCell,opt, angles);
                 end
             end
     end

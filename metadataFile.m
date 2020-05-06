@@ -10,7 +10,7 @@ opt.gitVersion = gitRev;
     
 if strcmp(opt.analysis,'result')
     metadata.minimizationOpt = opt.options;
-    metadata.options = rmfield(opt,{'options','angleConstrFinal'});
+    metadata.options = rmfield(opt,{'options','angleConstrFinal','hingeSet'});
 %     metadata.UnitCell.nodes = size(unitCell.Polyhedron.node,1);
 %     metadata.UnitCell.edges = size(unitCell.Polyhedron.edge,1);
 %     metadata.UnitCell.faces = size(unitCell.Polyhedron.face,1);
