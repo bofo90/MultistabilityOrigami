@@ -6,8 +6,7 @@ switch opt.analysis
         outputResults(unitCell,extrudedUnitCell,result,opt);
     case 'plot'
         %get file of results
-        extraName = sprintf('/kh%2.3f_kta%2.3f_ke%2.3f_kf%2.3f', opt.Khinge,opt.KtargetAngle,opt.Kedge, opt.Kface);
-        folderResults = strcat(pwd, '/Results/', opt.template,'/',opt.relAlgor,'/mat', opt.saveFile, extraName);
+        folderResults = strcat(pwd, '/Results/', opt.template,'/',opt.saveFile,'/mat');
         if ~exist(folderResults, 'dir')
             fprintf(['No folder with results:',folderResults,'\n']);
         else
@@ -36,14 +35,13 @@ switch opt.analysis
         
     case 'savedata'
         %get file of results
-        extraName = sprintf('/kh%2.3f_kta%2.3f_ke%2.3f_kf%2.3f', opt.Khinge,opt.KtargetAngle,opt.Kedge, opt.Kface);
-        folderResults = strcat(pwd, '/Results/', opt.template,'/',opt.relAlgor,'/mat', opt.saveFile, extraName);
+        folderResults = strcat(pwd, '/Results/', opt.template,'/',opt.saveFile,'/mat');
         if ~exist(folderResults, 'dir')
             fprintf(['No folder with results:',folderResults,'\n']);
         else
             
             %create folder of data with files
-            folderEnergy = strcat(pwd, '/Results/', opt.template,'/',opt.relAlgor,'/energy', opt.saveFile, extraName);
+            folderEnergy = strcat(pwd, '/Results/', opt.template,'/',opt.saveFile,'/energy');
             [fMassDist, fHinge, fEnergy, fAngles] = makeFileswHeaders(folderEnergy, folderResults);
 
             allFiles = dir(folderResults);
@@ -119,10 +117,10 @@ fileMassDist = strcat(folderEnergy, '/','PosStad.csv');
 if exist(fileMassDist, 'file')
     delete(fileMassDist) % always start with new file
 end
-headersMassDist = {'Hinge Number';'CenterMassXFol';'CenterMassXRel';'CenterMassYFol';'CenterMassYRel';...
-    'CenterMassZFol';'CenterMassZRel'; 'MeanDistanceCMFol';'MeanDistanceCMRel'; 'StdDevDistanceCMFol';...
-    'StdDevDistanceCMRel';'MaxEdgeStrechFol';'MaxEdgeStrechRel';'MinEdgeStrechFol';'MinEdgeStrechRel';...
-    'SumIntAnglesFol';'SumIntAnglesRel';'SumExtAnglesFol';'SumExtAnglesRel' };
+headersMassDist = {'Hinge Number';'CenterMassX';'CenterMassY';...
+    'CenterMassZ';'MeanDistanceCM';'StdDevDistanceCM';...
+    'MaxEdgeStrech';'MinEdgeStrech';...
+    'SumIntAngles';'SumExtAngles'};
 writeHeader(fileMassDist, headersMassDist);
 
 fileAngles = strcat(folderEnergy, '/','Angles.csv');

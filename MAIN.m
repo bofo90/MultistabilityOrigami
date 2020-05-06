@@ -13,8 +13,7 @@ clearvars -global
 %CHOOSE PREDEFINED GEOMETRY, SIMULATION AND PLOT OPTIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 opt=initOpt('inputType','individual', 'template','truncated tetrahedron', ...
-            'analysis', 'plot', 'readHingeFile', 'off',...
-            'Kappa',0.0001);    
+            'analysis', 'result', 'readHingeFile', 'off', 'Kappa',0.0001);    
 
 opt.saveFile = strcat('/',date,'_temp');
 opt.hingeSet = [1 2];
