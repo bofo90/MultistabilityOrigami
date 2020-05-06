@@ -32,7 +32,7 @@ function opt=initOpt(varargin)
 %Type of geometry ('individual' or 'material')
 opt.inputType = 'individual';
 %Name of the template (name of polyhedron or number of material)
-opt.template = 'cube';
+opt.template = 'truncated tetrahedron';
 %Apply periodic boundary conditions (on or off) only when material is
 %selected
 opt.periodic = 'on';
@@ -70,7 +70,7 @@ opt.relAlgor = opt.folAlgor;
 %Fold structure in specified amount of steps
 opt.steps = 1;
 %Save intermidiate stepsduring minimization (on or off
-opt.gethistory = 'off';
+opt.gethistory = 'on';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %PLOT AND MOVIE OPTIONS DEFAULT VALUES

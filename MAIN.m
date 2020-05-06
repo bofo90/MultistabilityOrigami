@@ -12,8 +12,8 @@ clearvars -global
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %CHOOSE PREDEFINED GEOMETRY, SIMULATION AND PLOT OPTIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-opt=initOpt('inputType','individual', 'template','tetrahedron', ...
-            'analysis', 'info', 'readHingeFile', 'off',...
+opt=initOpt('inputType','individual', 'template','truncated tetrahedron', ...
+            'analysis', 'plot', 'readHingeFile', 'off',...
             'Kappa',0.0001);    
 
 opt.saveFile = strcat('/',date,'_temp');
@@ -42,12 +42,7 @@ findDeformation(unitCell,extrudedUnitCell,opt);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %OUTPUT AND PLOT GEOMETRY
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-if (strcmp(opt.analysis, 'result') && strcmp(opt.createFig, 'off'))
-    fprintf('Not ploting any results.\n');
-else
-    ReadAndPlot(unitCell, extrudedUnitCell, opt);
-end
+ReadAndPlot(unitCell, extrudedUnitCell, opt);
 
 t = toc;
 fprintf('The whole program lasted %.2f seconds\n', t);

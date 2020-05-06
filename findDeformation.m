@@ -5,7 +5,7 @@ if strcmp(opt.analysis,'result')
     fprintf('Kappa:\t%f\n', opt.Khinge);
     switch opt.readHingeFile
         case 'off'
-            opt.angleConstrFinal(1).val = [opt.hingeSet(:), -(pi*(opt.constAnglePerc-0.005))*ones(length(hingeSet), 1)];
+            opt.angleConstrFinal(1).val = [opt.hingeSet(:), -(pi*(opt.constAnglePerc-0.005))*ones(length(opt.hingeSet), 1)];
             metadataFile(opt, unitCell, extrudedUnitCell);
             nonlinearFolding(unitCell,extrudedUnitCell,opt,opt.angleConstrFinal(1).val);
         case 'on'
@@ -95,7 +95,7 @@ opt.options.Algorithm = opt.folAlgor;
 result = SaveResultEnergy(result, E, exfl, opt);
 
 %Save the result in a file
-fileName = strcat(folderName,'/',mat2str(opt.angleConstrFinal(1).val(:,1)'),'op.mat');
+fileName = strcat(folderName,'/',mat2str(opt.angleConstrFinal(1).val(:,1)'),'.mat');
 save(fileName, 'result');
 
 

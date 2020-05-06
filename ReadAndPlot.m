@@ -24,7 +24,7 @@ switch opt.analysis
                 [hingeSet, ~] = getHingeSet(resfilename);
                 
                 %check if the hinge set is the one to plot
-                if ~isequal(hingeSet, opt.angleConstrFinal(end).val(:,1))
+                if ~isequal(hingeSet', opt.hingeSet)
                     continue;
                 end
                 extrudedUnitCell.angleConstr = [hingeSet(:), -(pi*(opt.constAnglePerc-0.005))*ones(length(hingeSet), 1)];
