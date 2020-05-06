@@ -54,13 +54,9 @@ opt.KtargetAngle = 100;
 
 %Read file with hinge combinations to fold (on or off)
 opt.readHingeFile = 'off';
-%Specify the max or min amount of hinges to fold at the same time from
-%these hinge combinations
-opt.maxHinges = 3;
-opt.minHinges = 0;
 %Specify hinges to fold and angle to fold (-pi is completely closed and 0 
 %is open)
-opt.angleConstrFinal(1).val=[ 1 , -pi*0.99];
+opt.hingeSet = [1 2];
 
 %Specify the contraints on the structures
 opt.constrEdge = 'off';
