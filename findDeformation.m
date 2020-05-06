@@ -83,7 +83,6 @@ extrudedUnitCell.angleConstr=[];
 
 %%%%%% Releasing part %%%%%%
 %change algorithm for releasing
-opt.options.Algorithm = opt.relAlgor;
 opt.angleConstrFinal(2).val = [];
 opt.KtargetAngle = 0;
 
@@ -119,16 +118,11 @@ else
     fprintf(['Angle contrain:', mat2str(opt.angleConstrFinal(iter).val(:,1)') ,'\n']);
 end
 extrudedUnitCell.angleConstr=opt.angleConstrFinal(iter).val;
-% fprintf('Folding:\t');
-% t1 = toc;
 %Determine new equilibrium
 [V(:,2),~,exfl(2,iter),output]=fmincon(@(u) Energy(u,extrudedUnitCell,opt),u0,[],[],Aeq,Beq,[],[],@(u) nonlinearConstr(u,extrudedUnitCell,opt),opt.options);
 u0 = V(:,2);
 %Determine energy of that equilibrium
 [E.E(2,iter),~,E.Eedge(2,iter),E.Ediag(2,iter),E.Eface(2,iter),E.Ehinge(2,iter),E.EtargetAngle(2,iter), ~]=Energy(u0,extrudedUnitCell,opt);
-% t2 = toc;
-% fprintf('time %1.2f, exitflag %d\n',t2-t1,exfl(2,iter));
-
 
 function [result, lastAngle, lastPosition] = SaveResultPos(result, opt, Positions, minimizationOuput, state)
 
@@ -367,7 +361,11 @@ for i=1:size(extrudedUnitCell.edge,1)
     Jedge(i,3*extrudedUnitCell.edge(i,2)-2:3*extrudedUnitCell.edge(i,2))=dx/L;
 end
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%NORMALIZED EDGE LENGTH AND JACOBIAN
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [dEdge, Jedge]=getEdgeNorm(extrudedUnitCell)
 dEdge=zeros(size(extrudedUnitCell.edge,1),1);
 Jedge=zeros(length(extrudedUnitCell.edge),size(extrudedUnitCell.node,1)*3);   
@@ -440,38 +438,38 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function initialiseGlobalx(u0, theta)
-global poop
-poop.x = [];
-poop.theta = [];
-poop.x = [poop.x u0];
-poop.theta = [poop.theta theta];
-poop.flag = 0;
+global data_min
+data_min.x = [];
+data_min.theta = [];
+data_min.x = [data_min.x u0];
+data_min.theta = [data_min.theta theta];
+data_min.flag = 0;
 
 function theta = getGlobalx(extrudedUnitCell)
-global poop
-if poop.flag
+global data_min
+if data_min.flag
     theta=zeros(size(extrudedUnitCell.nodeHingeEx,1),1);
-    extrudedUnitCell.node=extrudedUnitCell.node+[poop.x(1:3:end,end) poop.x(2:3:end,end) poop.x(3:3:end,end)];
+    extrudedUnitCell.node=extrudedUnitCell.node+[data_min.x(1:3:end,end) data_min.x(2:3:end,end) data_min.x(3:3:end,end)];
     for i=1:size(extrudedUnitCell.nodeHingeEx,1)
         [~,theta(i)]=JacobianHinge(extrudedUnitCell.node(extrudedUnitCell.nodeHingeEx(i,:),:));
-        if abs(poop.theta(i,end)-theta(i)) >= 0.5*2*pi
-            theta(i) = theta(i)+sign(poop.theta(i,end))*2*pi;
+        if abs(data_min.theta(i,end)-theta(i)) >= 0.5*2*pi
+            theta(i) = theta(i)+sign(data_min.theta(i,end))*2*pi;
 %             fprintf('angle %d global\n', i);
         end
     end
-    poop.theta = [poop.theta theta];
+    data_min.theta = [data_min.theta theta];
     %turn the flag off after analising the angles just after an iteration,
     %so it doesnt analyse it every time you get the energy
-    poop.flag = 0;
+    data_min.flag = 0;
 else
-    theta = poop.theta(:,end);
+    theta = data_min.theta(:,end);
 end
 
 function r = getGlobalAllx
-global poop
-r = poop.x;
+global data_min
+r = data_min.x;
 
 function theta = getGlobalAngles
-global poop
-theta = poop.theta;
+global data_min
+theta = data_min.theta;
 
