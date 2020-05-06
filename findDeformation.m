@@ -5,7 +5,7 @@ if strcmp(opt.analysis,'result')
     fprintf('Kappa:\t%f\n', opt.Khinge);
     switch opt.readHingeFile
         case 'off'
-            opt.angleConstrFinal(1).val = [opt.hingeSet(:), -(pi-pi*(opt.constAnglePerc-0.005))*ones(length(hingeSet), 1)];
+            opt.angleConstrFinal(1).val = [opt.hingeSet(:), -(pi*(opt.constAnglePerc-0.005))*ones(length(hingeSet), 1)];
             metadataFile(opt, unitCell, extrudedUnitCell);
             nonlinearFolding(unitCell,extrudedUnitCell,opt,opt.angleConstrFinal(1).val);
         case 'on'
@@ -18,7 +18,7 @@ if strcmp(opt.analysis,'result')
                 hingeList = dlmread(fileHinges);
                 metadataFile(opt, unitCell, extrudedUnitCell);
                 numHinges = size(hingeList, 1);
-                anglFold = -(pi-pi*(opt.constAnglePerc-0.005));
+                anglFold = -(pi*(opt.constAnglePerc-0.005));
                 for i = 1:numHinges
                     row = hingeList(i, :);
                     hinges = row(0~=row);
