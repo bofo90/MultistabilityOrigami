@@ -29,17 +29,52 @@ function opt=initOpt(varargin)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %GEOMETRY OPTIONS DEFAULT VALUES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Name of the template
+%Type of geometry ('individual' or 'material')
+opt.inputType = 'individual';
+%Name of the template (name of polyhedron or number of material)
 opt.template = 'cube';
-%Analysis type to do
+%Apply periodic boundary conditions (on or off) only when material is
+%selected
+opt.periodic = 'on';
+%Analysis type to do (info, result, savedata, plot)
 opt.analysis = 'result';
-%Do not read the Hinge selection file
-opt.readHingeFile = 'off';
-%Select hinges to be folded
-opt.angleConstrFinal(1).val=[ 1 , -pi*0.99];
 %Extrusion length
 %Value >0
 opt.Lextrude=1;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%SIMULATION OPTIONS DEFAULT VALUES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Stiffness of the different springs
+opt.Khinge = 0.001;
+opt.Kedge = 1;
+opt.Kdiag = 1;
+opt.Kface = 100;
+opt.KtargetAngle = 100;
+
+%Read file with hinge combinations to fold (on or off)
+opt.readHingeFile = 'off';
+%Specify the max or min amount of hinges to fold at the same time from
+%these hinge combinations
+opt.maxHinges = 3;
+opt.minHinges = 0;
+%Specify hinges to fold and angle to fold (-pi is completely closed and 0 
+%is open)
+opt.angleConstrFinal(1).val=[ 1 , -pi*0.99];
+
+%Specify the contraints on the structures
+opt.constrEdge = 'off';
+opt.constrFace = 'on';
+opt.constAnglePerc = 0.99; 
+opt.maxStretch = 0.3;
+
+%Minimization algorithm
+opt.folAlgor = 'sqp';
+opt.relAlgor = opt.folAlgor;
+%Fold structure in specified amount of steps
+opt.steps = 1;
+%Save intermidiate stepsduring minimization (on or off
+opt.gethistory = 'off';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %PLOT AND MOVIE OPTIONS DEFAULT VALUES
@@ -48,20 +83,8 @@ opt.Lextrude=1;
 %Number of frames to show the modes the modes
 %Integer value > 0
 opt.frames=30;
-%Scales the amplitude of the modes
-%Value between 0 and 1: 0 no deformation, 1 some hinge angles will be zero
-opt.scale=0.75;
-
-%Create plots ('on' or 'off')
-%Plot figures when analysis 'selecthinges', 'result' or 'savedata' is used.
-%In 'plot' and 'info' this option does not apply. The figure will be
-%created anyways
-opt.creatFig = 'off';
-%Save figures ('on' or 'off')
-opt.saveFig = 'off';
-%Save all results in a gif file
-%Options: 'on' or 'off'
-opt.saveMovie='off';
+%Figure DPI
+opt.figDPI = 200;
 
 %When using periodic boundary condtions, number of unit cells to show
 %Integer value >0
@@ -78,5 +101,8 @@ opt.EL=14;
 %UPDATE OPTIONS BASED ON INPUT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 for i=1:2:nargin
+    if strcmp(varargin{i},'Kappa')
+        opt.Khinge = varargin{i+1};
+    end
     opt.(varargin{i}) = varargin{i+1};
 end
