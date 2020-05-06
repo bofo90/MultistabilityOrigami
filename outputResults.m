@@ -25,10 +25,8 @@ opt.tranPol=0.5;
 %Check if output folder is required, and create it if it doesn't exist
 extraName = sprintf('/kh%2.3f_kta%2.3f_ke%2.3f_kf%2.3f', opt.Khinge,opt.KtargetAngle,opt.Kedge, opt.Kface);
 nameFolder=[pwd,'/Results/',opt.template,'/',opt.relAlgor,'/images',opt.saveFile,extraName];
-if or(strcmp(opt.saveFig,'on'),strcmp(opt.saveMovie,'on'))
-    if exist(nameFolder, 'dir')==0
-        mkdir(nameFolder)
-    end
+if exist(nameFolder, 'dir')==0
+    mkdir(nameFolder)
 end
 
 nref=size(unitCell.l,1);
@@ -231,7 +229,7 @@ if strcmp(opt.analysis,'info')
 
 end
 
-if strcmp(opt.analysis,'result') || strcmp(opt.analysis,'savedata') || strcmp(opt.analysis,'plot')
+if strcmp(opt.analysis,'plot')
         %First make solid face with 100% transparency
         for nc=1:size(extrudedUnitCell.latVec,1)
             for i=3:15
@@ -278,32 +276,6 @@ if strcmp(opt.analysis,'result') || strcmp(opt.analysis,'savedata') || strcmp(op
 %         printHigRes(f,opt,'Polyhedra_Packing_Expanded',nameFolder)
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %PLOT RESULT OF INTERNAL POLYHEDRA
-        %Made by Agustin Iniguez
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-%         for nMode=1:result.numMode
-%             pause(1)
-%             for framMode=1:length(plotextrudedUnitCell.mode(nMode).frame)
-%                 for ne=1:length(unitCell.Polyhedron)
-%                     for nc=1:size(unitCell.Polyhedron(ne).latVec,1)
-%                         plotunitCell.Init(ne).lat(nc).coorNew(:,1) = plotunitCell.InitNew(ne).lat(nc).coor(:,1) + result.deform(nMode).interV(framMode).V(1:size(unitCell.Polyhedron(1).node,1),1);
-%                         plotunitCell.Init(ne).lat(nc).coorNew(:,2) = plotunitCell.InitNew(ne).lat(nc).coor(:,2) + result.deform(nMode).interV(framMode).V(1:size(unitCell.Polyhedron(1).node,1),2);
-%                         plotunitCell.Init(ne).lat(nc).coorNew(:,3) = plotunitCell.InitNew(ne).lat(nc).coor(:,3) + result.deform(nMode).interV(framMode).V(1:size(unitCell.Polyhedron(1).node,1),3);
-%                         for i=3:10
-%                             set(hie{ne,nc,i},'vertices',plotunitCell.Init(ne).lat(nc).coorNew);
-%                             set(his{ne,nc,i},'vertices',plotunitCell.Init(ne).lat(nc).coorNew);  
-%                         end 
-%                     end
-%                 end
-%                 printGif(opt,framMode,f,nameFolder,['_',mat2str(extrudedUnitCell.angleConstr(:,1)'),'_',num2str(nMode),'_deformedUC']);%'_',sprintf('%2.3f_%2.3f_%2.3f', opt.Khinge,opt.KtargetAngle,opt.Kedge),
-%                 if framMode==length(plotextrudedUnitCell.mode(nMode).frame)
-%                     printHigRes(f,opt,['_',mat2str(extrudedUnitCell.angleConstr(:,1)'),'_',num2str(nMode),'_deformedUC'],nameFolder);%'_',sprintf('%2.3f_%2.3f_%2.3f', opt.Khinge,opt.KtargetAngle,opt.Kedge),
-%                 end
-%             end
-%         end
-
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %PLOT SELECTED FACES TO EXTRUDE, SOLIDIFY AND REMOVE
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -342,7 +314,7 @@ if strcmp(opt.analysis,'result') || strcmp(opt.analysis,'savedata') || strcmp(op
             end
         end
         set(gca,'xlim',xlim,'ylim',ylim,'zlim',zlim);
-%         printHigRes(f,opt,[filename,'_0_undeformed'],nameFolder);     
+        printHigRes(f,opt,[filename,'_0_undeformed'],nameFolder);     
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %PLOT MODES INDIVIDUALLY
@@ -350,7 +322,7 @@ if strcmp(opt.analysis,'result') || strcmp(opt.analysis,'savedata') || strcmp(op
         for nMode=1:result.numMode
             pause(1)
 %             fprintf('end part');
-            if strcmp(opt.saveMovie,'on')
+            if strcmp(opt.gethistory,'on')
                 for framMode=1:length(plotextrudedUnitCell.mode(nMode).frame)
     %                 framMode = length(plotextrudedUnitCell.mode(nMode).frame);
                     for nc=1:size(extrudedUnitCell.latVec,1)
@@ -376,7 +348,6 @@ if strcmp(opt.analysis,'result') || strcmp(opt.analysis,'savedata') || strcmp(op
                         set(hs{nc,i},'Vertices',plotextrudedUnitCell.mode(nMode).frame(framMode).lat(nc).coor,'facecolor','flat','facevertexCData',c*colt(4,:)+abs(1-c)*colt(5,:),'facealpha',1.0);
                     end
                 end
-                printGif(opt,framMode,f,nameFolder,[filename,'_',num2str(nMode),'_deformed']);%'_',sprintf('%2.3f_%2.3f_%2.3f', opt.Khinge,opt.KtargetAngle,opt.Kedge),
                 if framMode==length(plotextrudedUnitCell.mode(nMode).frame)
                     printHigRes(f,opt,[filename,'_',num2str(nMode),'_deformed'],nameFolder);%'_',sprintf('%2.3f_%2.3f_%2.3f', opt.Khinge,opt.KtargetAngle,opt.Kedge),
                 end
@@ -486,51 +457,35 @@ function hl2=plotOpt(opt)
     
 function printGif(opt,fram,f,nameFolder,nam)
     pause(1/opt.frames)
-    if strcmp(opt.saveMovie,'on')
-        name=[nameFolder,'/', nam];
-        switch opt.analysis
-            case 'modes'
-                name=[name,'_Modes_'];
-        end
-        switch opt.periodic
-            case 'on'
-                name=[name,'_pcb_',num2str(opt.plotPer),'.gif'];
-            case 'off'
-                name=[name,'.gif'];
-        end
-        if opt.safeMovieAntiAlias==0
-            frame = getframe(f.Number);
-        else
-            myaa(opt.safeMovieAntiAlias) 
-            pause(0.03)
-            frame = getframe(f.Number+1);
-        end
-        im = frame2im(frame);
-        [imind,cm] = rgb2ind(im,256);
-        if fram==1
-            imwrite(imind,cm,name,'gif', 'Loopcount',inf,'delaytime',0.04);
-        else
-            imwrite(imind,cm,name,'gif','WriteMode','append','delaytime',0.04);
-        end
-        if opt.safeMovieAntiAlias~=0
-            close(f.Number+1)
-        end
+    name=[nameFolder,'/', nam];
+    switch opt.analysis
+        case 'modes'
+            name=[name,'_Modes_'];
+    end
+    switch opt.periodic
+        case 'on'
+            name=[name,'_pcb_',num2str(opt.plotPer),'.gif'];
+        case 'off'
+            name=[name,'.gif'];
+    end
+    frame = getframe(f.Number);
+    im = frame2im(frame);
+    [imind,cm] = rgb2ind(im,256);
+    if fram==1
+        imwrite(imind,cm,name,'gif', 'Loopcount',inf,'delaytime',0.04);
+    else
+        imwrite(imind,cm,name,'gif','WriteMode','append','delaytime',0.04);
     end
     
 function printHigRes(f,opt,nam,nameFolder)
     pause(1/opt.frames)
-    switch opt.saveFig
-        case 'on'
-            
-%             name=[nameFolder,'/',opt.template,'_',num2str(opt.plotPer),'_',nam];
-            name=[nameFolder,'/',nam,'.png'];
-            savefig([nameFolder,'/',nam])
-            figpos=getpixelposition(f); %dont need to change anything here
-            resolution=get(0,'ScreenPixelsPerInch'); %dont need to change anything here
-            set(f,'paperunits','inches','papersize',figpos(3:4)/resolution,...
-            'paperposition',[0 0 figpos(3:4)/resolution]); %dont need to change anything here
-            print(f,name,'-dpng',['-r',num2str(opt.figDPI)],'-opengl') %save file
-    end
+    name=[nameFolder,'/',nam,'.png'];
+    savefig([nameFolder,'/',nam])
+    figpos=getpixelposition(f); %dont need to change anything here
+    resolution=get(0,'ScreenPixelsPerInch'); %dont need to change anything here
+    set(f,'paperunits','inches','papersize',figpos(3:4)/resolution,...
+    'paperposition',[0 0 figpos(3:4)/resolution]); %dont need to change anything here
+    print(f,name,'-dpng',['-r',num2str(opt.figDPI)],'-opengl') %save file
 
 function [f,hs,hie,his] = copyFigure(unitCell,extrudedUnitCell,opt,hs,hie,his)
     f=figure('Position', [0 0 800 800]);
