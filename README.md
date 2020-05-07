@@ -1,45 +1,69 @@
-**Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**
+**Exploring multistability in prismatic metamaterials through local actuation**
 
-When you're done, you can delete the content in this README and update the file with details for others getting started with your repository.
+by   
+Agustin Iniguez-Rabago (1)  
+Yun Li (1)  
+Johannes T.B. Overvelde (1)\*
+  
 
-*We recommend that you open this README in another tab as you perform the tasks below. You can [watch our video](https://youtu.be/0ocf7u76WSo) for a full demo of all the steps in this tutorial. Open the video in a new tab to avoid leaving Bitbucket.*
+Affiliation:  
+(1) AMOLF, Science Park 104, 1098 XG Amsterdam, The Netherlands
 
----
+Corresponding author:  
+\*overvelde@amolf.nl
 
-## Edit a file
+Published in Nature Communications 10, 5577 (2019) https://doi.org/10.1038/s41467-019-13319-7
 
-You’ll start by editing this README file to learn how to edit a file in Bitbucket.
-
-1. Click **Source** on the left side.
-2. Click the README.md link from the list of files.
-3. Click the **Edit** button.
-4. Delete the following text: *Delete this line to make a change to the README from Bitbucket.*
-5. After making your change, click **Commit** and then **Commit** again in the dialog. The commit page will open and you’ll see the change you just made.
-6. Go back to the **Source** page.
-
----
-
-## Create a file
-
-Next, you’ll add a new file to this repository.
-
-1. Click the **New file** button at the top of the **Source** page.
-2. Give the file a filename of **contributors.txt**.
-3. Enter your name in the empty file space.
-4. Click **Commit** and then **Commit** again in the dialog.
-5. Go back to the **Source** page.
-
-Before you move on, go ahead and explore the repository. You've already seen the **Source** page, but check out the **Commits**, **Branches**, and **Settings** pages.
+*If you use this code, please cite the article.*
 
 ---
 
-## Clone a repository
+## Purpose
 
-Use these steps to clone from SourceTree, our client for using the repository command-line free. Cloning allows you to work on your files locally. If you don't yet have SourceTree, [download and install first](https://www.sourcetreeapp.com/). If you prefer to clone from the command line, see [Clone a repository](https://confluence.atlassian.com/x/4whODQ).
+This code scans the energy landscape of prismatic structures in order to find energy minima. 
+It creates a prismatic structure based on uniform polyhedra by extruding faces. The structure is made out of faces than can stretch and hinges that can fold. 
+The energy of these structures is based on linear and rotational springs at the faces and hinges, respectively. The minimization of such energy is done by using 
+the SQP algorithm. The code also generates a 3D plot of these structures. For more detail on the structures, the energy, the algorithm and the results please 
+refer to the paper. 
 
-1. You’ll see the clone button under the **Source** heading. Click that button.
-2. Now click **Check out in SourceTree**. You may need to create a SourceTree account or log in.
-3. When you see the **Clone New** dialog in SourceTree, update the destination path and name if you’d like to and then click **Clone**.
-4. Open the directory you just created to see your repository’s files.
+---
 
-Now that you're more familiar with your Bitbucket repository, go ahead and add a new file locally. You can [push your change back to Bitbucket with SourceTree](https://confluence.atlassian.com/x/iqyBMg), or you can [add, commit,](https://confluence.atlassian.com/x/8QhODQ) and [push from the command line](https://confluence.atlassian.com/x/NQ0zDQ).
+## Requirements
+
+Matlab version 2018a with Optimization Toolbox.
+
+---
+
+## Files and directories
+
+This repository has two directories and the file MAIN.m
+
+1. **MAIN.m** is the main file of the code. For more information on how to use it see he **Usage** section.
+2. **Modules** directory has all the supporting code for the MAIN.m file. If there is something wrong that you want us to check, please contact the corresponding author. 
+3. **hingeList_reduced** directory contains all hinge selections of different polyhedra. This can be used to scan through the energy landscapes of these structures in order to find energy minima.
+
+---
+
+## Usage
+
+The **MAIN.m** file has a _option_ variable at the beginning. This variable controls the flow of the program. These are the main options: 
+
+1. **inputType**: This option can be _individual_ or _material_:  
+  * _individual_: it creates a single polyhedron that is extruded.  
+  * _material_: it creates a polyhedron that is tessellated in space using periodic boundary conditions  .
+2. **template**: Here the type of polyhedron is defined. These are the options:  
+  * _individual_: tetrahedron, triangular prism, cube, octahedron, truncated tetrahedron, pentagonal prism, hexagonal prism, heptagonal prism, octagonal prism, cuboctahedron, nonagonal prism, decagonal prism,
+  dodecahedron, dodecagonal prism, truncated cube, truncated octahedron, rhombicuboctahedron, and truncated cuboctahedron.  
+  * _material_: triangular prism_mat1, triangular prism_mat2, cubes_mat, hexagonal prism_mat, truncated tetrahedron_mat, octagonal prism_mat, cuboctahedron_mat, dodecagonal prism_mat, truncated cube_mat, truncated octahedron_mat,
+  rhombicuboctahedron_mat1, rhombicuboctahedron_mat2, truncated cuboctahedron_mat1, truncated cuboctahedron_mat2, truncated cuboctahedron_mat3.  
+3. **analysis**: There are possible types of analysis:  
+  * _info_: it plots the polyhedron and the extrusion. It also plots the numbers of the hinges in order for you to see which hinges you want to fold.
+  * _result_: it folds the specified hinges in the option **hingeSet** by applying a momentum. Then it releases this momentum and let the structure relax to its local minimum. The code saves the data in a variable called result in the specified folder (option **saveFile**).  
+  * _plot_: it reads from the specified file (option **saveFile**) the variable result and plots the deformation in a 3D graph.
+  * _savedata_: it reads all results in the specified folder (option **saveFile**), obtains the energy, angles, position distribution and more, and saves this data in .csv files for further analysis.  
+4. **readHingeFile**: This option can be either _on_ or _off_. If it is _on_ the code reads the file from the directory **hingeList_reduced** to obtain all possible hinge selection and it tests them. If it is _off_ the option **hingeSet** determines the hinges to fold.
+5. **Kappa**: This variable is related to the stiffness of the springs. For more information see the original paper. 
+6. **saveFile**: This is the sub-directory name where the files are saved. The simulation's results, plots and data are saved under a directory called **Result**, in a subdirectory with the name of the polyhedra.
+7. **hingeSet**: This are the hinge numbers that the code folds. You can check which ones they are by selecting the option **analysis** as _info_.
+
+There are more options in the file **initOpt.m**, however they are not needed to be changed. Only if you are curious enough, you can start changing them to see what happens. 
