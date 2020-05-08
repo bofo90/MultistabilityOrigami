@@ -50,7 +50,7 @@ The **MAIN.m** file has a _option_ variable at the beginning. This variable cont
 
 1. **inputType**: This option can be _individual_ or _material_:  
   * _individual_: it creates a single polyhedron that is extruded.  
-  * _material_: it creates a polyhedron that is tessellated in space using periodic boundary conditions  .
+  * _material_: it creates a polyhedron that is tessellated in space using periodic boundary conditions.
 2. **template**: Here the type of polyhedron is defined. These are the options:  
   * _individual_: tetrahedron, triangular prism, cube, octahedron, truncated tetrahedron, pentagonal prism, hexagonal prism, heptagonal prism, octagonal prism, cuboctahedron, nonagonal prism, decagonal prism,
   dodecahedron, dodecagonal prism, truncated cube, truncated octahedron, rhombicuboctahedron, and truncated cuboctahedron.  
@@ -67,3 +67,25 @@ The **MAIN.m** file has a _option_ variable at the beginning. This variable cont
 7. **hingeSet**: This are the hinge numbers that the code folds. You can check which ones they are by selecting the option **analysis** as _info_.
 
 There are more options in the file **initOpt.m**, however they are not needed to be changed. Only if you are curious enough, you can start changing them to see what happens. 
+
+---
+
+## Example
+
+These are the necesarry steps to follow a simple simulation and see the results:
+
+1. These are the options to run the energy minimization:   
+
+    ``opt=initOpt('inputType','individual', 'template','truncated tetrahedron', ...``  
+    ``            'analysis', 'result', 'readHingeFile', 'off', 'Kappa',0.0001);``  
+    `` ``   
+    ``opt.saveFile = strcat('/',date,'_Example');``  
+    ``opt.hingeSet = [1 2]; %This vector can be changed for the hinge numbers that you want to fold``  
+    
+2. These are the options to plot the results:   
+
+    ``opt=initOpt('inputType','individual', 'template','truncated tetrahedron', ...``  
+    ``            'analysis', 'plot', 'readHingeFile', 'off', 'Kappa',0.0001);``  
+    `` ``   
+    ``opt.saveFile = strcat('/',date,'_Example');``  
+    ``opt.hingeSet = [1 2]; %This vector can be changed for the hinge numbers that you want to fold`` 
