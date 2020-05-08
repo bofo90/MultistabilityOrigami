@@ -16,8 +16,8 @@ addpath([pwd  '\Modules'])
 opt=initOpt('inputType','individual', 'template','truncated tetrahedron', ...
             'analysis', 'plot', 'readHingeFile', 'off', 'Kappa',0.0001);    
 
-opt.saveFile = strcat('/',date,'_temp');
-opt.hingeSet = [1 2];
+opt.saveFile = strcat('/',date,'_Example');
+opt.hingeSet = [1 2]; %This vector can be changed for the hinge numbers that you want to fold or plot
 
 tic;
 
